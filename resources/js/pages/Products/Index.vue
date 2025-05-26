@@ -1,9 +1,16 @@
 <script setup lang="ts">
+import DropdownAction from '@/components/shared/DropdownAction.vue';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
+import type { PaginateData } from '@/types/PaginateData';
 import type { Product } from '@/types/Product';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import type { ColumnDef, ColumnFiltersState, ExpandedState, SortingState, VisibilityState } from '@tanstack/vue-table';
 import {
     FlexRender,
@@ -17,15 +24,8 @@ import {
 import { ArrowUpDown, ChevronDown } from 'lucide-vue-next';
 import { h, ref } from 'vue';
 
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-// import DropdownAction from './DataTableDemoColumn.vue';
-
 const props = defineProps<{
-    products: Product[];
+    products: PaginateData<Product[]>;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -59,7 +59,16 @@ const columns: ColumnDef<Product>[] = [
     },
     {
         accessorKey: 'id',
-        header: 'ID',
+        header: ({ column }) => {
+            return h(
+                Button,
+                {
+                    variant: 'ghost',
+                    onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+                },
+                () => ['ID', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })],
+            );
+        },
         cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('id')),
     },
     {
@@ -78,22 +87,32 @@ const columns: ColumnDef<Product>[] = [
     },
     {
         accessorKey: 'price',
-        header: 'Price',
-        cell: ({ row }) => h('div', null, row.getValue('price')),
+        header: () => h('div', { class: 'text-center' }, 'Price'),
+        cell: ({ row }) => h('div', { class: 'text-center' }, row.getValue('price')),
         enableSorting: false,
     },
-    // {
-    //     id: 'actions',
-    //     enableHiding: false,
-    //     cell: ({ row }) => {
-    //         const payment = row.original;
+    {
+        id: 'actions',
+        enableHiding: false,
+        header: () => h('div', { class: 'text-center' }, 'Action'),
+        cell: ({ row }) => {
+            const product = row.original;
 
-    //         return h(DropdownAction, {
-    //             payment,
-    //             onExpand: row.toggleExpanded,
-    //         });
-    //     },
-    // },
+            return h(
+                'div',
+                { class: 'text-center' },
+                h(DropdownAction, {
+                    actions: [
+                        {
+                            name: 'View Details',
+                            url: route('products.show', product.id),
+                        },
+                    ],
+                    onExpand: row.toggleExpanded,
+                }),
+            );
+        },
+    },
 ];
 
 const sorting = ref<SortingState>([]);
@@ -103,7 +122,7 @@ const rowSelection = ref({});
 const expanded = ref<ExpandedState>({});
 
 const table = useVueTable({
-    data: props.products,
+    data: props.products.data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -131,6 +150,10 @@ const table = useVueTable({
         get expanded() {
             return expanded.value;
         },
+        pagination: {
+            pageIndex: 0,
+            pageSize: props.products.data.length,
+        },
     },
 });
 </script>
@@ -144,9 +167,9 @@ const table = useVueTable({
                 <div class="flex items-center py-4">
                     <Input
                         class="max-w-sm"
-                        placeholder="Filter emails..."
-                        :model-value="table.getColumn('email')?.getFilterValue() as string"
-                        @update:model-value="table.getColumn('email')?.setFilterValue($event)"
+                        placeholder="Filter products..."
+                        :model-value="table.getColumn('name')?.getFilterValue() as string"
+                        @update:model-value="table.getColumn('name')?.setFilterValue($event)"
                     />
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
@@ -206,8 +229,12 @@ const table = useVueTable({
                         {{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }} row(s) selected.
                     </div>
                     <div class="space-x-2">
-                        <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()"> Previous </Button>
-                        <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()"> Next </Button>
+                        <Link :href="products.prev_page_url || '#'" :disabled="!products.prev_page_url" as-child>
+                            <Button variant="outline" size="sm" :disabled="!products.prev_page_url"> Previous </Button>
+                        </Link>
+                        <Link :href="products.next_page_url || '#'" :disabled="!products.next_page_url" as-child>
+                            <Button variant="outline" size="sm" :disabled="!products.next_page_url"> Next </Button>
+                        </Link>
                     </div>
                 </div>
             </div>
