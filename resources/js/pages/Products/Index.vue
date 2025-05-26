@@ -10,7 +10,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import type { PaginateData } from '@/types/PaginateData';
 import type { Product } from '@/types/Product';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import type { ColumnDef, ColumnFiltersState, ExpandedState, SortingState, VisibilityState } from '@tanstack/vue-table';
 import {
     FlexRender,
@@ -22,7 +22,7 @@ import {
     useVueTable,
 } from '@tanstack/vue-table';
 import { ArrowUpDown, ChevronDown } from 'lucide-vue-next';
-import { h, ref } from 'vue';
+import { h, reactive, ref } from 'vue';
 
 const props = defineProps<{
     products: PaginateData<Product[]>;
@@ -38,6 +38,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route('products.index'),
     },
 ];
+
+const setting = reactive({
+    search: route().params.search,
+});
 
 const columns: ColumnDef<Product>[] = [
     {
@@ -161,6 +165,14 @@ const table = useVueTable({
         },
     },
 });
+
+const searchHandler = () => {
+    router.visit(route('products.index', setting));
+};
+
+const resetHandler = () => {
+    router.visit(route('products.index'));
+};
 </script>
 
 <template>
@@ -170,12 +182,11 @@ const table = useVueTable({
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="w-full">
                 <div class="flex items-center py-4">
-                    <Input
-                        class="max-w-sm"
-                        placeholder="Filter products..."
-                        :model-value="table.getColumn('name')?.getFilterValue() as string"
-                        @update:model-value="table.getColumn('name')?.setFilterValue($event)"
-                    />
+                    <form class="flex items-center gap-2" @submit.prevent="searchHandler">
+                        <Input class="min-w-60" placeholder="Search products..." v-model="setting.search" />
+                        <Button class="cursor-pointer" type="submit">Search</Button>
+                        <Button class="cursor-pointer" type="reset" @click="resetHandler" variant="secondary">Reset</Button>
+                    </form>
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
                             <Button variant="outline" class="ml-auto"> Columns <ChevronDown class="ml-2 h-4 w-4" /> </Button>
