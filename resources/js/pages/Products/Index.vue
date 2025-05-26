@@ -83,7 +83,12 @@ const columns: ColumnDef<Product>[] = [
                 () => ['Name', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })],
             );
         },
-        cell: ({ row }) => h('div', null, row.getValue('name')),
+        cell: ({ row }) => {
+            return h('div', { class: 'flex items-center gap-3' }, [
+                h('img', { src: row.original.feature_image, alt: row.getValue('name'), class: 'size-10 object-cover' }),
+                h('p', null, row.getValue('name')),
+            ]);
+        },
     },
     {
         accessorKey: 'price',
