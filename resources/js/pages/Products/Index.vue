@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DropdownAction from '@/components/shared/DropdownAction.vue';
+import Pagination from '@/components/shared/Pagination.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -10,7 +11,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import type { PaginateData } from '@/types/PaginateData';
 import type { Product } from '@/types/Product';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import type { ColumnDef, ColumnFiltersState, ExpandedState, SortingState, VisibilityState } from '@tanstack/vue-table';
 import {
     FlexRender,
@@ -245,12 +246,7 @@ const resetHandler = () => {
                         {{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }} row(s) selected.
                     </div>
                     <div class="space-x-2">
-                        <Link :href="products.prev_page_url || '#'" :disabled="!products.prev_page_url" as-child>
-                            <Button variant="outline" size="sm" :disabled="!products.prev_page_url"> Previous </Button>
-                        </Link>
-                        <Link :href="products.next_page_url || '#'" :disabled="!products.next_page_url" as-child>
-                            <Button variant="outline" size="sm" :disabled="!products.next_page_url"> Next </Button>
-                        </Link>
+                        <Pagination :paginate-data="products" />
                     </div>
                 </div>
             </div>
