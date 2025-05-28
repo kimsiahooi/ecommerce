@@ -32,13 +32,20 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        Product::create($request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'slug' => ['required', 'string', 'alpha_dash', 'max:255', 'unique:products,slug'],
-            'feature_image' => ['nullable', 'image', 'max:1024'],
-            'price' => ['nullable', 'decimal:0.01'],
-        ]));
+            'feature_image' => ['nullable', 'image', 'max:2048'],
+            'price' => ['nullable', 'numeric', 'decimal:0,2', 'min:0.01'],
+        ]);
+
+        if ($request->hasFile('feature_image')) {
+            $path = $request->file('feature_image')->store('products', 'public');
+            $validated['feature_image'] = $path;
+        }
+
+        Product::create($validated);
 
         return back()->with('success', 'Product created successfully.');
     }

@@ -92,8 +92,10 @@ const columns: ColumnDef<Product>[] = [
             );
         },
         cell: ({ row }) => {
+            const featureImage = row.original.feature_image;
+
             return h('div', { class: 'flex items-center gap-3' }, [
-                h('img', { src: row.original.feature_image, alt: row.getValue('name'), class: 'size-10 object-cover' }),
+                featureImage ? h('img', { src: featureImage, alt: row.getValue('name'), class: 'size-10 object-cover' }) : null,
                 h('p', null, row.getValue('name')),
             ]);
         },

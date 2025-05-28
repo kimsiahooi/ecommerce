@@ -12,4 +12,9 @@ class Product extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['name', 'description', 'slug', 'feature_image', 'price'];
+
+    public function getFeatureImageAttribute($value)
+    {
+        return $value ? '/' . ltrim($value, '/') : null;
+    }
 }
