@@ -1,11 +1,12 @@
 <script setup lang="ts" generic="T">
+import PaginationButton from '@/components/shared/PaginationButton.vue';
 import { Button } from '@/components/ui/button';
-import { Pagination, PaginationContent } from '@/components/ui/pagination';
+import { Pagination, PaginationContent, PaginationEllipsis } from '@/components/ui/pagination';
 import type { PaginateData } from '@/types/PaginateData';
 import { Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-vue-next';
 
-const props = withDefaults(
+withDefaults(
     defineProps<{
         siblingCount?: number;
         paginateData: PaginateData<T>;
@@ -14,23 +15,52 @@ const props = withDefaults(
         siblingCount: 1,
     },
 );
-
-const paginateLinks = computed(() => props.paginateData.links);
 </script>
 
 <template>
-    <Pagination :items-per-page="paginateData.per_page" :total="paginateData.total" :sibling-count="props.siblingCount" show-edges>
+    <Pagination
+        :items-per-page="paginateData.per_page"
+        :total="paginateData.total"
+        :sibling-count="1"
+        :default-page="paginateData.current_page"
+        show-edges
+        v-slot="{ page }"
+    >
         <PaginationContent class="flex items-center gap-1">
-            <template v-for="(link, index) in paginateLinks" :key="index">
-                <Link v-if="link.url" :href="link.url" as-child>
-                    <Button :variant="link.active ? 'default' : 'outline'" class="cursor-pointer">
-                        <span v-html="link.label"></span>
+            <PaginationContent v-slot="{ items }">
+                <Link :href="paginateData.first_page_url" as-child>
+                    <Button size="icon" variant="outline" class="cursor-pointer">
+                        <ChevronsLeft />
                     </Button>
                 </Link>
-                <Button v-else :variant="link.label === '...' ? 'ghost' : 'outline'" :disabled="!link.url">
-                    <span v-html="link.label"></span>
+                <Link v-if="paginateData.prev_page_url" :href="paginateData.prev_page_url" as-child>
+                    <Button size="icon" variant="outline" class="cursor-pointer">
+                        <ChevronLeft />
+                    </Button>
+                </Link>
+                <Button v-else size="icon" variant="outline" class="cursor-pointer" disabled>
+                    <ChevronLeft />
                 </Button>
-            </template>
+                <template v-for="(item, index) in items" :key="index">
+                    <template v-if="item.type === 'page'">
+                        <PaginationButton :value="item.value" :is-active="item.value === page" :links="paginateData.links" />
+                    </template>
+                    <PaginationEllipsis v-else />
+                </template>
+                <Link v-if="paginateData.next_page_url" :href="paginateData.next_page_url" as-child>
+                    <Button size="icon" variant="outline" class="cursor-pointer">
+                        <ChevronRight />
+                    </Button>
+                </Link>
+                <Button v-else size="icon" variant="outline" class="cursor-pointer" disabled>
+                    <ChevronRight />
+                </Button>
+                <Link :href="paginateData.last_page_url" as-child>
+                    <Button size="icon" variant="outline" class="cursor-pointer">
+                        <ChevronsRight />
+                    </Button>
+                </Link>
+            </PaginationContent>
         </PaginationContent>
     </Pagination>
 </template>
