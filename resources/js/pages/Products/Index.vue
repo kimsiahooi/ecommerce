@@ -12,7 +12,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import type { PaginateData } from '@/types/PaginateData';
 import type { Product } from '@/types/Product';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import type { ColumnDef, ColumnFiltersState, ExpandedState, SortingState, VisibilityState } from '@tanstack/vue-table';
 import {
     FlexRender,
@@ -191,6 +191,11 @@ const resetHandler = () => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="w-full">
+                <div class="flex flex-wrap items-center justify-end gap-2">
+                    <Link :href="route('products.create')" as-child>
+                        <Button class="cursor-pointer">Create</Button>
+                    </Link>
+                </div>
                 <div class="flex items-center py-4">
                     <form class="flex items-center gap-2" @submit.prevent="searchHandler">
                         <Input class="min-w-60" placeholder="Search products..." v-model="setting.search" />

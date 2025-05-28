@@ -24,7 +24,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return inertia('Products/Create');
     }
 
     /**
@@ -32,7 +32,15 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Product::create($request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'slug' => ['required', 'string', 'alpha_dash', 'max:255', 'unique:products,slug'],
+            'feature_image' => ['nullable', 'image', 'max:1024'],
+            'price' => ['nullable', 'decimal:0.01'],
+        ]));
+
+        return back()->with('success', 'Product created successfully.');
     }
 
     /**
