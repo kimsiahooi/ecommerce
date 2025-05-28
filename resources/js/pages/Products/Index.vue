@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { valueUpdater } from '@/components/ui/table/utils';
 import { useDateFormat } from '@/composables/useDateFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
+import AppMainLayout from '@/layouts/AppMainLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import type { PaginateData } from '@/types/PaginateData';
 import type { Product } from '@/types/Product';
@@ -25,6 +26,10 @@ import {
 } from '@tanstack/vue-table';
 import { ArrowUpDown, ChevronDown } from 'lucide-vue-next';
 import { h, reactive, ref } from 'vue';
+
+defineOptions({
+    layout: AppMainLayout,
+});
 
 const props = defineProps<{
     products: PaginateData<Product[]>;

@@ -5,10 +5,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
+import AppMainLayout from '@/layouts/AppMainLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import slug from 'slug';
 import { watch } from 'vue';
+
+defineOptions({
+    layout: AppMainLayout,
+});
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
