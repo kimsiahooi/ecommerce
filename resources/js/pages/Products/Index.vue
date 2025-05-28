@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
+import { useDateFormat } from '@/composables/useDateFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import type { PaginateData } from '@/types/PaginateData';
@@ -28,6 +29,8 @@ import { h, reactive, ref } from 'vue';
 const props = defineProps<{
     products: PaginateData<Product[]>;
 }>();
+
+const { formatDate } = useDateFormat();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -99,6 +102,12 @@ const columns: ColumnDef<Product>[] = [
         accessorKey: 'price',
         header: () => h('div', { class: 'text-center' }, 'Price'),
         cell: ({ row }) => h('div', { class: 'text-center' }, row.getValue('price')),
+        enableSorting: false,
+    },
+    {
+        accessorKey: 'created_at',
+        header: () => h('div', { class: 'text-center' }, 'Created At'),
+        cell: ({ row }) => h('div', { class: 'text-center' }, formatDate(row.getValue('created_at'))),
         enableSorting: false,
     },
     {

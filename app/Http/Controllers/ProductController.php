@@ -12,7 +12,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = Product::when($request->search, fn($query) => $query->where('name', 'LIKE', "%$request->search%"))->paginate()->withQueryString();
+        $products = Product::when($request->search, fn($query) => $query->where('name', 'LIKE', "%$request->search%"))->orderByDesc('id')->paginate()->withQueryString();
 
         return inertia('Products/Index', [
             'products' => $products,
