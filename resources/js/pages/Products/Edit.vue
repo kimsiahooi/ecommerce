@@ -33,6 +33,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: props.product.name,
         href: route('products.show', { product: props.product.id }),
     },
+    {
+        title: 'Edit',
+        href: route('products.edit', { product: props.product.id }),
+    },
 ];
 
 const form = useForm<{
