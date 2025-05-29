@@ -56,7 +56,9 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        dd($product);
+        return inertia('Products/Show', [
+            'product' => $product,
+        ]);
     }
 
     /**
