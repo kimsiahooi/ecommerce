@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -63,7 +64,9 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        return inertia('Products/Edit', [
+            'product' => $product,
+        ]);
     }
 
     /**
@@ -71,7 +74,28 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'slug' => ['required', 'string', 'alpha_dash', 'max:255', 'unique:products,slug,' . $product->id . ',id'],
+            'feature_image' => ['nullable', 'image', 'max:2048'],
+            'price' => ['nullable', 'numeric', 'decimal:0,2', 'min:0.01'],
+        ]);
+
+        $validated['feature_image'] = $product->feature_image;
+
+        if ($request->hasFile('feature_image')) {
+            if ($product->feature_image) {
+                Storage::disk('public')->delete($product->feature_image);
+            }
+
+            $path = $request->file('feature_image')->store('products', 'public');
+            $validated['feature_image'] = $path;
+        }
+
+        $product->update($validated);
+
+        return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
 
     /**

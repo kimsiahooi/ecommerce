@@ -133,6 +133,10 @@ const columns: ColumnDef<Product>[] = [
                             name: 'View Details',
                             url: route('products.show', product.id),
                         },
+                        {
+                            name: 'Edit Product',
+                            url: route('products.edit', product.id),
+                        },
                     ],
                     onExpand: row.toggleExpanded,
                 }),
