@@ -11,11 +11,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Link } from '@inertiajs/vue3';
 import { Ellipsis } from 'lucide-vue-next';
+import type { HTMLAttributes } from 'vue';
 
 interface Action {
     name: string;
-    url: string;
-    method?: 'get' | 'post' | 'put' | 'patch' | 'delete';
+    link?: {
+        url: string;
+        method?: 'get' | 'post' | 'put' | 'patch' | 'delete';
+    };
+    itemClass?: HTMLAttributes['class'];
+    onClick?: (...args: unknown[]) => unknown;
 }
 
 defineProps<{
@@ -29,14 +34,17 @@ defineProps<{
             <Button variant="ghost" size="icon" class="cursor-pointer"> <Ellipsis /> </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent class="w-56">
-            <DropdownMenuLabel>Action</DropdownMenuLabel>
+            <DropdownMenuLabel class="font-semibold">Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup v-for="action in actions" :key="action.name">
-                <Link :href="action.url" :method="action.method" as-child class="w-full">
-                    <DropdownMenuItem>
+                <Link v-if="action.link" :href="action.link.url" :method="action.link.method" as-child class="w-full">
+                    <DropdownMenuItem :class="action.itemClass">
                         <span>{{ action.name }}</span>
                     </DropdownMenuItem>
                 </Link>
+                <DropdownMenuItem v-else @click="action.onClick" :class="action.itemClass">
+                    <span>{{ action.name }}</span>
+                </DropdownMenuItem>
             </DropdownMenuGroup>
         </DropdownMenuContent>
     </DropdownMenu>

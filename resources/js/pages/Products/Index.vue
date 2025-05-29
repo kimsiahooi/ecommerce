@@ -3,6 +3,7 @@ import DropdownAction from '@/components/shared/DropdownAction.vue';
 import Pagination from '@/components/shared/Pagination.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -25,7 +26,7 @@ import {
     useVueTable,
 } from '@tanstack/vue-table';
 import { ArrowUpDown, ChevronDown } from 'lucide-vue-next';
-import { h, reactive, ref } from 'vue';
+import { h, reactive, ref, watch } from 'vue';
 
 defineOptions({
     layout: AppMainLayout,
@@ -50,6 +51,16 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const setting = reactive({
     search: route().params.search,
+});
+
+const deleteProduct = reactive<{
+    dialogIsOpen: boolean;
+    isDeleting: boolean;
+    product: Product | null;
+}>({
+    dialogIsOpen: false,
+    isDeleting: false,
+    product: null,
 });
 
 const columns: ColumnDef<Product>[] = [
@@ -131,11 +142,20 @@ const columns: ColumnDef<Product>[] = [
                     actions: [
                         {
                             name: 'View Details',
-                            url: route('products.show', product.id),
+                            link: {
+                                url: route('products.show', product.id),
+                            },
                         },
                         {
                             name: 'Edit Product',
-                            url: route('products.edit', product.id),
+                            link: {
+                                url: route('products.edit', product.id),
+                            },
+                        },
+                        {
+                            name: 'Delete Product',
+                            onClick: () => setDeleteProduct(product),
+                            itemClass: '!bg-destructive !text-destructive-foreground',
                         },
                     ],
                     onExpand: row.toggleExpanded,
@@ -194,6 +214,36 @@ const searchHandler = () => {
 const resetHandler = () => {
     router.visit(route('products.index'));
 };
+
+const setDeleteProduct = (product: Product) => {
+    deleteProduct.product = product;
+};
+
+const resetDeleteProduct = () => {
+    deleteProduct.product = null;
+};
+
+const deleteProductHandler = () => {
+    if (deleteProduct.product) {
+        router.visit(route('products.destroy', { product: deleteProduct.product?.id }), {
+            method: 'delete',
+            onBefore: () => {
+                deleteProduct.isDeleting = true;
+            },
+            onFinish: () => {
+                deleteProduct.isDeleting = false;
+                deleteProduct.product = null;
+            },
+        });
+    }
+};
+
+watch(
+    () => deleteProduct.product,
+    (newDeleteProduct) => {
+        deleteProduct.dialogIsOpen = !!newDeleteProduct;
+    },
+);
 </script>
 
 <template>
@@ -276,5 +326,19 @@ const resetHandler = () => {
                 </div>
             </div>
         </div>
+        <Dialog :open="deleteProduct.dialogIsOpen">
+            <DialogContent class="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Delete {{ deleteProduct.product?.name }}</DialogTitle>
+                    <DialogDescription> Are you sure you want to delete this product? </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button class="cursor-pointer" variant="secondary" @click="resetDeleteProduct">Cancel</Button>
+                    <Button class="cursor-pointer" variant="destructive" :disabled="deleteProduct.isDeleting" @click="deleteProductHandler">
+                        Delete
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </AppLayout>
 </template>
