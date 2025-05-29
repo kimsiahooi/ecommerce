@@ -97,7 +97,7 @@ watch(
                                 </div>
                                 <div class="grid w-full items-center gap-2">
                                     <Label>Price</Label>
-                                    <Input type="text" placeholder="Enter Price" v-model="form.price" />
+                                    <Input type="number" placeholder="Enter Price" v-model.number="form.price" step=".01" />
                                     <p v-if="form.errors.price" class="text-destructive">{{ form.errors.price }}</p>
                                 </div>
                                 <div class="grid w-full items-center gap-2">
