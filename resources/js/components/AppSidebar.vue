@@ -13,11 +13,20 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: route('dashboard'),
         icon: LayoutGrid,
+        isActive: route().current('dashboard'),
     },
     {
-        title: 'Products',
-        href: route('products.index'),
+        title: 'Shop',
+        href: '#',
         icon: LayoutGrid,
+        isActive: route().current('shop.*'),
+        submenu: [
+            {
+                title: 'Products',
+                href: route('shop.products.index'),
+                isActive: route().current('shop.products.*'),
+            },
+        ],
     },
 ];
 

@@ -45,7 +45,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Products',
-        href: route('products.index'),
+        href: route('shop.products.index'),
     },
 ];
 
@@ -143,13 +143,13 @@ const columns: ColumnDef<Product>[] = [
                         {
                             name: 'View Details',
                             link: {
-                                url: route('products.show', product.id),
+                                url: route('shop.products.show', product.id),
                             },
                         },
                         {
                             name: 'Edit Product',
                             link: {
-                                url: route('products.edit', product.id),
+                                url: route('shop.products.edit', product.id),
                             },
                         },
                         {
@@ -208,11 +208,11 @@ const table = useVueTable({
 });
 
 const searchHandler = () => {
-    router.visit(route('products.index', setting));
+    router.visit(route('shop.products.index', setting));
 };
 
 const resetHandler = () => {
-    router.visit(route('products.index'));
+    router.visit(route('shop.products.index'));
 };
 
 const setDeleteProduct = (product: Product) => {
@@ -225,7 +225,7 @@ const resetDeleteProduct = () => {
 
 const deleteProductHandler = () => {
     if (deleteProduct.product) {
-        router.visit(route('products.destroy', { product: deleteProduct.product?.id }), {
+        router.visit(route('shop.products.destroy', { product: deleteProduct.product?.id }), {
             method: 'delete',
             onBefore: () => {
                 deleteProduct.isDeleting = true;
@@ -253,7 +253,7 @@ watch(
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="w-full">
                 <div class="flex flex-wrap items-center justify-end gap-2">
-                    <Link :href="route('products.create')" as-child>
+                    <Link :href="route('shop.products.create')" as-child>
                         <Button class="cursor-pointer">Create</Button>
                     </Link>
                 </div>

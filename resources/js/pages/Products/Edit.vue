@@ -27,15 +27,15 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Products',
-        href: route('products.index'),
+        href: route('shop.products.index'),
     },
     {
         title: props.product.name,
-        href: route('products.show', { product: props.product.id }),
+        href: route('shop.products.show', { product: props.product.id }),
     },
     {
         title: 'Edit',
-        href: route('products.edit', { product: props.product.id }),
+        href: route('shop.products.edit', { product: props.product.id }),
     },
 ];
 
@@ -64,7 +64,7 @@ const imageHandler = (event: Event) => {
 };
 
 const submit = () =>
-    form.post(route('products.update', { product: props.product.id }), {
+    form.post(route('shop.products.update', { product: props.product.id }), {
         onSuccess: () => {
             form.reset();
         },

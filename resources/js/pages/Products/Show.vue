@@ -33,11 +33,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Products',
-        href: route('products.index'),
+        href: route('shop.products.index'),
     },
     {
         title: props.product.name,
-        href: route('products.show', { product: props.product.id }),
+        href: route('shop.products.show', { product: props.product.id }),
     },
 ];
 
@@ -50,7 +50,7 @@ const resetDeleteProduct = () => {
 };
 
 const deleteProductHandler = () => {
-    router.visit(route('products.destroy', { product: props.product.id }), {
+    router.visit(route('shop.products.destroy', { product: props.product.id }), {
         method: 'delete',
         onBefore: () => {
             deleteProduct.isDeleting = true;
@@ -69,7 +69,7 @@ const deleteProductHandler = () => {
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="space-y-5">
                 <div class="flex flex-wrap items-center justify-end gap-2">
-                    <Link :href="route('products.edit', { product: product.id })" as-child>
+                    <Link :href="route('shop.products.edit', { product: product.id })" as-child>
                         <Button class="cursor-pointer">Edit Product</Button>
                     </Link>
                     <Button class="cursor-pointer" variant="destructive" @click="setDeleteProduct">Delete Product</Button>

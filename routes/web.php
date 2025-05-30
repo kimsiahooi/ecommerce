@@ -15,7 +15,9 @@ Route::prefix('admin')
             return Inertia::render('Dashboard');
         })->name('dashboard');
 
-        Route::resource('products', ProductController::class);
+        Route::prefix('shop')->name('shop.')->group(function () {
+            Route::resource('products', ProductController::class);
+        });
 
         require __DIR__ . '/settings.php';
     });

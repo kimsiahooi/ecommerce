@@ -22,11 +22,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Products',
-        href: route('products.index'),
+        href: route('shop.products.index'),
     },
     {
         title: 'Create',
-        href: route('products.create'),
+        href: route('shop.products.create'),
     },
 ];
 
@@ -53,7 +53,7 @@ const imageHandler = (event: Event) => {
 };
 
 const submit = () =>
-    form.post(route('products.store'), {
+    form.post(route('shop.products.store'), {
         onSuccess: () => {
             form.reset();
         },
