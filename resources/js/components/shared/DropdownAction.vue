@@ -33,7 +33,7 @@ defineProps<{
         <DropdownMenuTrigger as-child>
             <Button variant="ghost" size="icon" class="cursor-pointer"> <Ellipsis /> </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-56">
+        <DropdownMenuContent class="w-40">
             <DropdownMenuLabel class="font-semibold">Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup v-for="action in actions" :key="action.name">

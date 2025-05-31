@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -17,6 +18,7 @@ Route::prefix('admin')
 
         Route::prefix('shop')->name('shop.')->group(function () {
             Route::resource('products', ProductController::class);
+            Route::resource('product-categories', ProductCategoryController::class);
         });
 
         require __DIR__ . '/settings.php';

@@ -26,6 +26,11 @@ const mainNavItems: NavItem[] = [
                 href: route('shop.products.index'),
                 isActive: route().current('shop.products.*'),
             },
+            {
+                title: 'Product Categories',
+                href: route('shop.product-categories.index'),
+                isActive: route().current('shop.product-categories.*'),
+            },
         ],
     },
 ];

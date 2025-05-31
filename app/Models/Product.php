@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -15,6 +16,6 @@ class Product extends Model
 
     public function getFeatureImageAttribute($value)
     {
-        return $value ? '/' . ltrim($value, '/') : null;
+        return $value ? asset($value) : null;
     }
 }

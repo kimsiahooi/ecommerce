@@ -13,7 +13,7 @@ import { useDateFormat } from '@/composables/useDateFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import AppMainLayout from '@/layouts/AppMainLayout.vue';
 import type { BreadcrumbItem } from '@/types';
-import type { Product } from '@/types/shop';
+import type { ProductCategory } from '@/types/shop';
 import { Head, Link, router } from '@inertiajs/vue3';
 import type { ColumnDef, ColumnFiltersState, ExpandedState, SortingState, VisibilityState } from '@tanstack/vue-table';
 import {
@@ -33,7 +33,7 @@ defineOptions({
 });
 
 const props = defineProps<{
-    products: PaginateData<Product[]>;
+    product_categories: PaginateData<ProductCategory[]>;
 }>();
 
 const { formatDate } = useDateFormat();
@@ -44,8 +44,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route('dashboard'),
     },
     {
-        title: 'Products',
-        href: route('shop.products.index'),
+        title: 'Product categories',
+        href: route('shop.product-categories.index'),
     },
 ];
 
@@ -66,14 +66,14 @@ const setting = reactive({
 const deleteData = reactive<{
     dialogIsOpen: boolean;
     isDeleting: boolean;
-    product: Product | null;
+    category: ProductCategory | null;
 }>({
     dialogIsOpen: false,
     isDeleting: false,
-    product: null,
+    category: null,
 });
 
-const columns: ColumnDef<Product>[] = [
+const columns: ColumnDef<ProductCategory>[] = [
     {
         id: 'select',
         header: ({ table }) =>
@@ -127,12 +127,6 @@ const columns: ColumnDef<Product>[] = [
         },
     },
     {
-        accessorKey: 'price',
-        header: () => h('div', { class: 'text-center' }, 'Price'),
-        cell: ({ row }) => h('div', { class: 'text-center' }, row.getValue('price')),
-        enableSorting: false,
-    },
-    {
         accessorKey: 'created_at',
         header: () => h('div', { class: 'text-center' }, 'Created At'),
         cell: ({ row }) => h('div', { class: 'text-center' }, formatDate(row.getValue('created_at'))),
@@ -143,7 +137,7 @@ const columns: ColumnDef<Product>[] = [
         enableHiding: false,
         header: () => h('div', { class: 'text-center' }, 'Action'),
         cell: ({ row }) => {
-            const product = row.original;
+            const category = row.original;
 
             return h(
                 'div',
@@ -153,18 +147,18 @@ const columns: ColumnDef<Product>[] = [
                         {
                             name: 'View Details',
                             link: {
-                                url: route('shop.products.show', product.id),
+                                url: route('shop.product-categories.show', category.id),
                             },
                         },
                         {
                             name: 'Edit',
                             link: {
-                                url: route('shop.products.edit', product.id),
+                                url: route('shop.product-categories.edit', category.id),
                             },
                         },
                         {
                             name: 'Delete',
-                            onClick: () => setDelete(product),
+                            onClick: () => setDelete(category),
                             itemClass: '!bg-destructive !text-destructive-foreground',
                         },
                     ],
@@ -182,7 +176,7 @@ const rowSelection = ref({});
 const expanded = ref<ExpandedState>({});
 
 const table = useVueTable({
-    data: props.products.data,
+    data: props.product_categories.data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -212,37 +206,37 @@ const table = useVueTable({
         },
         pagination: {
             pageIndex: 0,
-            pageSize: props.products.data.length,
+            pageSize: props.product_categories.data.length,
         },
     },
 });
 
 const searchHandler = () => {
-    router.visit(route('shop.products.index', setting));
+    router.visit(route('shop.product-categories.index', setting));
 };
 
 const resetHandler = () => {
-    router.visit(route('shop.products.index'));
+    router.visit(route('shop.product-categories.index'));
 };
 
-const setDelete = (product: Product) => {
-    deleteData.product = product;
+const setDelete = (category: ProductCategory) => {
+    deleteData.category = category;
 };
 
 const resetDelete = () => {
-    deleteData.product = null;
+    deleteData.category = null;
 };
 
 const deleteHandler = () => {
-    if (deleteData.product && !deleteData.isDeleting) {
-        router.visit(route('shop.products.destroy', deleteData.product?.id), {
+    if (deleteData.category && !deleteData.isDeleting) {
+        router.visit(route('shop.product-categories.destroy', deleteData.category.id), {
             method: 'delete',
             onBefore: () => {
                 deleteData.isDeleting = true;
             },
             onFinish: () => {
                 deleteData.isDeleting = false;
-                deleteData.product = null;
+                deleteData.category = null;
             },
         });
     }
@@ -256,7 +250,7 @@ watch(
 );
 
 watch(
-    () => deleteData.product,
+    () => deleteData.category,
     (newDelete) => {
         deleteData.dialogIsOpen = !!newDelete;
     },
@@ -264,7 +258,7 @@ watch(
 </script>
 
 <template>
-    <Head title="Products" />
+    <Head title="Product Categories" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
@@ -277,7 +271,7 @@ watch(
                 <div class="flex flex-col-reverse gap-2 py-4 md:flex-row md:items-center">
                     <form class="flex flex-col gap-2 md:flex-row md:items-center" @submit.prevent="searchHandler">
                         <div>
-                            <Input class="min-w-60" placeholder="Search products..." v-model="setting.search" />
+                            <Input class="min-w-60" placeholder="Search categories..." v-model="setting.search" />
                         </div>
                         <div class="flex gap-2">
                             <Button class="flex-1 cursor-pointer md:flex-auto" type="submit">Search</Button>
@@ -345,7 +339,7 @@ watch(
                         {{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }} row(s) selected.
                     </div>
                     <div class="space-x-2">
-                        <Pagination :paginate-data="products" />
+                        <Pagination :paginate-data="product_categories" />
                     </div>
                 </div>
             </div>
@@ -353,8 +347,8 @@ watch(
         <Dialog :open="deleteData.dialogIsOpen">
             <DialogContent class="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Delete {{ deleteData.product?.name }}</DialogTitle>
-                    <DialogDescription> Are you sure you want to delete this product? </DialogDescription>
+                    <DialogTitle>Delete {{ deleteData.category?.name }}</DialogTitle>
+                    <DialogDescription> Are you sure you want to delete this category? </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <Button class="cursor-pointer" variant="secondary" @click="resetDelete">Cancel</Button>
