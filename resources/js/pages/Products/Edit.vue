@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
 import AppMainLayout from '@/layouts/AppMainLayout.vue';
 import type { BreadcrumbItem } from '@/types';
-import type { Product } from '@/types/Product';
+import type { Product } from '@/types/shop';
 import { Head, useForm } from '@inertiajs/vue3';
 import slug from 'slug';
 import { watch } from 'vue';

@@ -13,7 +13,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = Product::when($request->search, fn($query) => $query->where('name', 'LIKE', "%$request->search%"))->orderByDesc('id')->paginate()->withQueryString();
+        $products = Product::when($request->search, fn($query) => $query->where('name', 'LIKE', "%$request->search%"))->orderByDesc('id')->paginate($request->input('entries', 10))->withQueryString();
 
         return inertia('Products/Index', [
             'products' => $products,
@@ -48,7 +48,7 @@ class ProductController extends Controller
 
         Product::create($validated);
 
-        return redirect()->route('shop.index')->with('success', 'Product created successfully.');
+        return redirect()->route('shop.products.index')->with('success', 'Product created successfully.');
     }
 
     /**

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DropdownAction from '@/components/shared/DropdownAction.vue';
-import Pagination from '@/components/shared/Pagination.vue';
+import { Pagination, type PaginateData } from '@/components/shared/pagination';
+import { Select, type SelectOption } from '@/components/shared/select';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -12,8 +13,7 @@ import { useDateFormat } from '@/composables/useDateFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import AppMainLayout from '@/layouts/AppMainLayout.vue';
 import type { BreadcrumbItem } from '@/types';
-import type { PaginateData } from '@/types/PaginateData';
-import type { Product } from '@/types/Product';
+import type { Product } from '@/types/shop';
 import { Head, Link, router } from '@inertiajs/vue3';
 import type { ColumnDef, ColumnFiltersState, ExpandedState, SortingState, VisibilityState } from '@tanstack/vue-table';
 import {
@@ -26,7 +26,7 @@ import {
     useVueTable,
 } from '@tanstack/vue-table';
 import { ArrowUpDown, ChevronDown } from 'lucide-vue-next';
-import { h, reactive, ref, watch } from 'vue';
+import { computed, h, reactive, ref, watch } from 'vue';
 
 defineOptions({
     layout: AppMainLayout,
@@ -49,8 +49,18 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const selectOptions = <SelectOption[]>[
+    { name: '10 Entries', value: '10' },
+    { name: '25 Entries', value: '25' },
+    { name: '50 Entries', value: '50' },
+    { name: '100 Entries', value: '100' },
+];
+
+const routeParams = computed(() => route().params);
+
 const setting = reactive({
-    search: route().params.search,
+    search: routeParams.value.search,
+    entries: routeParams.value.entries || '10',
 });
 
 const deleteProduct = reactive<{
@@ -239,6 +249,13 @@ const deleteProductHandler = () => {
 };
 
 watch(
+    () => setting.entries,
+    () => {
+        searchHandler();
+    },
+);
+
+watch(
     () => deleteProduct.product,
     (newDeleteProduct) => {
         deleteProduct.dialogIsOpen = !!newDeleteProduct;
@@ -257,32 +274,39 @@ watch(
                         <Button class="cursor-pointer">Create</Button>
                     </Link>
                 </div>
-                <div class="flex items-center py-4">
-                    <form class="flex items-center gap-2" @submit.prevent="searchHandler">
-                        <Input class="min-w-60" placeholder="Search products..." v-model="setting.search" />
-                        <Button class="cursor-pointer" type="submit">Search</Button>
-                        <Button class="cursor-pointer" type="reset" @click="resetHandler" variant="secondary">Reset</Button>
+                <div class="flex flex-col-reverse gap-2 py-4 md:flex-row md:items-center">
+                    <form class="flex flex-col gap-2 md:flex-row md:items-center" @submit.prevent="searchHandler">
+                        <div>
+                            <Input class="min-w-60" placeholder="Search products..." v-model="setting.search" />
+                        </div>
+                        <div class="flex gap-2">
+                            <Button class="flex-1 cursor-pointer md:flex-auto" type="submit">Search</Button>
+                            <Button class="flex-1 cursor-pointer md:flex-auto" type="reset" @click="resetHandler" variant="secondary">Reset</Button>
+                        </div>
                     </form>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger as-child>
-                            <Button variant="outline" class="ml-auto"> Columns <ChevronDown class="ml-2 h-4 w-4" /> </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuCheckboxItem
-                                v-for="column in table.getAllColumns().filter((column) => column.getCanHide())"
-                                :key="column.id"
-                                class="capitalize"
-                                :model-value="column.getIsVisible()"
-                                @update:model-value="
-                                    (value) => {
-                                        column.toggleVisibility(!!value);
-                                    }
-                                "
-                            >
-                                {{ column.id.split('_').join(' ') }}
-                            </DropdownMenuCheckboxItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div class="flex flex-1 flex-wrap items-center justify-end gap-2">
+                        <Select :options="selectOptions" placeholder="Select Entries" v-model="setting.entries" />
+                        <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                                <Button variant="outline"> Columns <ChevronDown class="ml-2 h-4 w-4" /> </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuCheckboxItem
+                                    v-for="column in table.getAllColumns().filter((column) => column.getCanHide())"
+                                    :key="column.id"
+                                    class="capitalize"
+                                    :model-value="column.getIsVisible()"
+                                    @update:model-value="
+                                        (value) => {
+                                            column.toggleVisibility(!!value);
+                                        }
+                                    "
+                                >
+                                    {{ column.id.split('_').join(' ') }}
+                                </DropdownMenuCheckboxItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
                 <div class="rounded-md border">
                     <Table>
@@ -316,7 +340,7 @@ watch(
                     </Table>
                 </div>
 
-                <div class="flex items-center justify-end space-x-2 py-4">
+                <div class="flex flex-col items-center justify-end gap-2 space-x-2 py-4 md:flex-row">
                     <div class="text-muted-foreground flex-1 text-sm">
                         {{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }} row(s) selected.
                     </div>

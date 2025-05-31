@@ -7,7 +7,7 @@ import { useDateFormat } from '@/composables/useDateFormat';
 import AppLayout from '@/layouts/AppLayout.vue';
 import AppMainLayout from '@/layouts/AppMainLayout.vue';
 import type { BreadcrumbItem } from '@/types';
-import type { Product } from '@/types/Product';
+import type { Product } from '@/types/shop';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { reactive } from 'vue';
 

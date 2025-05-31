@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { PaginateLink } from '@/components/shared/pagination';
 import { Button } from '@/components/ui/button';
-import type { PaginateLink } from '@/types/PaginateData';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 

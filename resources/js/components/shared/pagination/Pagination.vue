@@ -1,12 +1,11 @@
 <script setup lang="ts" generic="T">
-import PaginationButton from '@/components/shared/PaginationButton.vue';
+import { type PaginateData, PaginationButton } from '@/components/shared/pagination';
 import { Button } from '@/components/ui/button';
 import { Pagination, PaginationContent, PaginationEllipsis } from '@/components/ui/pagination';
-import type { PaginateData } from '@/types/PaginateData';
 import { Link } from '@inertiajs/vue3';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-vue-next';
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         siblingCount?: number;
         paginateData: PaginateData<T>;
@@ -21,7 +20,7 @@ withDefaults(
     <Pagination
         :items-per-page="paginateData.per_page"
         :total="paginateData.total"
-        :sibling-count="1"
+        :sibling-count="props.siblingCount"
         :default-page="paginateData.current_page"
         show-edges
         v-slot="{ page }"
@@ -43,9 +42,14 @@ withDefaults(
                 </Button>
                 <template v-for="(item, index) in items" :key="index">
                     <template v-if="item.type === 'page'">
-                        <PaginationButton :value="item.value" :is-active="item.value === page" :links="paginateData.links" />
+                        <PaginationButton
+                            class="hidden md:inline-block"
+                            :value="item.value"
+                            :is-active="item.value === page"
+                            :links="paginateData.links"
+                        />
                     </template>
-                    <PaginationEllipsis v-else />
+                    <PaginationEllipsis v-else class="hidden md:inline-block" />
                 </template>
                 <Link v-if="paginateData.next_page_url" :href="paginateData.next_page_url" as-child>
                     <Button size="icon" variant="outline" class="cursor-pointer">
